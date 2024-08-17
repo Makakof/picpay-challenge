@@ -1,37 +1,55 @@
 package com.picpay_challenge.entities;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.picpay_challenge.exceptions.PicPayException;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
+@Entity
+@Setter
+@Getter
 public class Wallet
 {
-    @ManyToOne
-    private Person owner;
-    private Transfer List<Transfer> listOfTransfers;
-    private BigDecimal balance;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(columnDefinition = "UUID", updatable = false, nullable = false)
+    private UUID id;
 
-    Wallet(Person owner)
+    @JsonIgnore
+    @OneToOne(mappedBy = "wallet")
+    private Person owner;
+
+    @Column(nullable = false)
+    private BigDecimal balance = BigDecimal.valueOf(0);
+
+
+    private Wallet() {
+    }
+
+    Wallet(Person owner, BigDecimal amount)
     {
         this.owner = owner;
+        this.balance = amount;
     }
 
-    public void withdraw()
-    // this.wallet.deposit(Eduardo, 1500);
-
-
-    public void deposit(double amount, Person receiver)
+    public void withdraw(BigDecimal amount)
     {
-        if(this.balance <= amount)
+        if(this.balance.compareTo(amount) < 0)
             throw new PicPayException("insufficient balance");
 
-        if(receiver == null)
-            throw new PicPayException("recipient dont exist");
-
-        this.balance -= amount; // vai virar o metodo de saque
-        //this.wallet.deposit(Eduardo, 1500);
-        receiver.wallet.balance.subtract() += amount;
+        this.balance = this.balance.subtract(amount);
+        //
     }
+
+
+    public void deposit(BigDecimal amount)
+    {
+        this.balance = this.balance.add(amount);
+    }
+
 }
