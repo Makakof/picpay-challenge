@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -27,6 +28,11 @@ public class Wallet
     @Column(nullable = false)
     private BigDecimal balance = BigDecimal.valueOf(0);
 
+    @OneToMany(mappedBy = "walletPayer")
+    private List<Voucher> vouchersPayers;
+
+    @OneToMany(mappedBy = "walletReceiver")
+    private List<Voucher> vouchersReceivers;
 
     private Wallet() {
     }
@@ -45,7 +51,6 @@ public class Wallet
         this.balance = this.balance.subtract(amount);
         //
     }
-
 
     public void deposit(BigDecimal amount)
     {

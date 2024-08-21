@@ -1,10 +1,14 @@
 package com.picpay_challenge.controller;
+import com.picpay_challenge.dto.DocumentDto;
+import com.picpay_challenge.dto.TransactionDto;
 import com.picpay_challenge.dto.VoucherDto;
 import com.picpay_challenge.entities.Voucher;
 import com.picpay_challenge.service.PersonService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequestMapping("/picpayTransaction")
 @RestController
@@ -23,9 +27,17 @@ public class TransactionController
         //
         return ResponseEntity.ok(voucher);
     }
-    @PostMapping("/transaction")
-    public String createPerson()
+    @PostMapping("/voucher/payer")
+    public ResponseEntity<List<Voucher>> findPayerVouchers(@RequestBody @Validated DocumentDto request)
     {
-        return "Hellor World";
+        List<Voucher> vouchers = personService.getListPayerVouchers(request);
+        return ResponseEntity.ok(vouchers);
+    }
+
+    @PostMapping("/voucher/receiver")
+    public ResponseEntity<List<Voucher>> findReceiverVouchers(@RequestBody @Validated DocumentDto request)
+    {
+        List<Voucher> vouchers = personService.getListReceiverVouchers(request);
+        return ResponseEntity.ok(vouchers);
     }
 }

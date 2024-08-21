@@ -7,6 +7,8 @@ import com.picpay_challenge.repository.VoucherRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Service
@@ -25,10 +27,24 @@ public class VoucherService
         receiver.getWallet().deposit(amount);
 
         Voucher voucher = new Voucher(payer.getWallet(), receiver.getWallet(), amount);
-        //payer.getWallet().getListOfTransfers().add(voucher);
-        //receiver.getWallet().getListOfTransfers().add(voucher);
         voucherRepository.save(voucher);
 
         return voucher;
+    }
+
+    public List<Voucher> createPayerVouchers(Person payer)
+    {
+        List<Voucher> vouchers = voucherRepository.findAll();
+        vouchers.removeIf(voucherNow -> !voucherNow.getWalletPayer().getOwner().getDocument().equalsIgnoreCase(payer.getDocument()));
+
+        return vouchers;
+    }
+
+    public List<Voucher> createReceiverVouchers(Person receiver)
+    {
+        List<Voucher> vouchers = voucherRepository.findAll();
+        vouchers.removeIf(voucherNow -> !voucherNow.getWalletReceiver().getOwner().getDocument().equalsIgnoreCase(receiver.getDocument()));
+
+        return vouchers;
     }
 }

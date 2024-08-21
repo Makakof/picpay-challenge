@@ -1,5 +1,6 @@
 package com.picpay_challenge.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,12 +19,12 @@ public class Voucher
     @Column(columnDefinition = "UUID", updatable = false, nullable = false)
     private UUID id;
 
-    @OneToOne
-    @JoinColumn(nullable = false)
+    @ManyToOne
+    @JsonIgnore
     private Wallet walletPayer;
 
-    @OneToOne
-    @JoinColumn(nullable = false)
+    @ManyToOne
+    @JsonIgnore
     private Wallet walletReceiver;
 
     @Column(nullable = false)
