@@ -4,14 +4,19 @@ import com.picpay_challenge.enums.AccountType;
 import com.picpay_challenge.dto.PersonDto;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
 @Getter
 @Setter
-public class Person
+public class Person implements UserDetails
 {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -50,5 +55,30 @@ public class Person
 
     public Person(PersonDto request) {
         this(request.name(), request.mail(), request.password(), request.document(),request.accountType(), request.balance());
+    }
+
+    public Person(PersonDto request, String encryptedPassword) {
+        this(request.name(), request.mail(), encryptedPassword, request.document(),request.accountType(), request.balance());
+    }
+
+    /*
+    Métodos criados pela implementação da interface UserDetails para fazer a validação dos dados
+    */
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        if(this.accountType == AccountType.LOJIST)
+            return List.of(new SimpleGrantedAuthority("ROLE_LOJIST"));
+
+        return List.of(new SimpleGrantedAuthority("ROLE_COMMUM"));
+    }
+
+    @Override
+    public String getPassword() {
+        return this.password;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.mail;
     }
 }

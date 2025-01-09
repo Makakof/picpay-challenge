@@ -6,8 +6,13 @@ import com.picpay_challenge.dto.TransactionDto;
 import com.picpay_challenge.dto.VoucherDto;
 import com.picpay_challenge.entities.Person;
 import com.picpay_challenge.entities.Voucher;
+import com.picpay_challenge.exceptions.PicPayException;
 import com.picpay_challenge.repository.PersonRepository;
 import com.picpay_challenge.repository.VoucherRepository;
+import org.apache.coyote.BadRequestException;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -65,5 +70,22 @@ public class PersonService
     {
         Person receiver = this.getByDocument(request.document());
         return voucherService.createReceiverVouchers(receiver);
+    }
+
+    public Person registryPerson(PersonDto request) throws Exception
+    {
+        if(personRepository.findByDocument(request.document()) != null)
+            throw new BadRequestException("There is already a user registered with this CPF");
+
+        String encryptedPassword = new BCryptPasswordEncoder().encode(request.password());
+        Person newPerson = new Person(request, encryptedPassword);
+
+        personRepository.save(newPerson);
+
+        return newPerson;
+    }
+
+    public UserDetails findByMail(String mail){
+        return personRepository.findByMail(mail);
     }
 }
