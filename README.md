@@ -52,3 +52,7 @@ Com o banco aberto, abra o terminal no diretório que se encontra o arquivo.jar 
 ```
 java -jar NomeDoArquivo.jar
 ```
+
+### Swagger
+
+Para acessar os end points basta ir para a url: [http:localhost/3000/api](http:localhost/3000/api)
